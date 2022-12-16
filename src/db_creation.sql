@@ -48,14 +48,14 @@ CREATE DOMAIN co_living.phone_number AS character varying(15) NOT NULL
 	CONSTRAINT proper_phone CHECK (((VALUE)::text ~* '[+][0-9]{2}[0-9]{9}'::text));
 
 -- Name: serialID; Type: DOMAIN; Schema: co-living; Owner: postgres
-CREATE DOMAIN co_living."serialID" AS character varying (10) NOT NULL
+CREATE DOMAIN co_living.ID AS character varying (10) NOT NULL
 	CONSTRAINT proper_serial_id CHECK (((VALUE)::text ~* '[A-Z]{3}[0-9]{7}'::text));
 
--- Name: ID; Type: DOMAIN; Schema: co-living; Owner: postgres
+-- Name: personalID; Type: DOMAIN; Schema: co-living; Owner: postgres
 -- It must be a string of two words separated by a comma
 -- The first word must be one of the following: passport, id card, driving license, health card
 -- The second word must be the number of the corresponding ID
-CREATE DOMAIN co_living.ID AS character varying(256) NOT NULL
+CREATE DOMAIN co_living.personalID AS character varying(256) NOT NULL
     -- must have a comma in between
     CONSTRAINT comma_check CHECK (((VALUE)::text ~* '^[^,]*,[^,]*$'::text))
     CONSTRAINT id_type_check CHECK (split_part((VALUE)::text, ',', 1) in ('passport', 'id card', 'driving license', 'health card'))
@@ -145,7 +145,7 @@ CREATE TYPE co_living.provided_service AS ENUM (
 
 -- Name: Manager; Type: TABLE; Schema: co-living; Owner: postgres
 CREATE TABLE co_living.manager (
-    manager_id co_living.ID NOT NULL,                           -- id of the manager
+    manager_id co_living.personalID NOT NULL,                           -- id of the manager
     manager_name character varying(50) NOT NULL,                -- name of the manager
     manager_surname character varying(50) NOT NULL,             -- surname of the manager
     manager_phone co_living.phone_number NOT NULL,              -- phone number of the manager
@@ -156,7 +156,7 @@ CREATE TABLE co_living.manager (
 
 -- Name: applicant; Type: TABLE; Schema: co-living; Owner: postgres
 CREATE TABLE co_living.applicant (
-    applicant_id  co_living.ID NOT NULL,                        -- id of the applicant
+    applicant_id  co_living.personalID NOT NULL,                        -- personalID of the applicant
     applicant_name character varying(50) NOT NULL,              -- name of the applicant
     surname character varying(50) NOT NULL,                     -- surname of the applicant
     email co_living.email NOT NULL,                             -- email of the applicant
@@ -168,7 +168,7 @@ CREATE TABLE co_living.applicant (
 
 -- Name: tenant; Type: TABLE; Schema: co-living; Owner: postgres
 CREATE TABLE co_living.tenant (
-    tenant_id co_living."serialID" NOT NULL,                    -- id of the tenant
+    tenant_id co_living.ID NOT NULL,                    -- id of the tenant
     tenant_name character varying(50) NOT NULL,                 -- name of the tenant
     surname character varying(50) NOT NULL,                     -- surname of the tenant
     username character varying(50) NOT NULL,                    -- username of the tenant
@@ -178,15 +178,15 @@ CREATE TABLE co_living.tenant (
     bank_info co_living.bank_info NOT NULL,                     -- bank info of the tenant
     phone_number co_living.phone_number,                        -- phone number of the tenant
     nationality character varying(50),                          -- nationality        
-    national_ID co_living.ID,                                   -- national ID of the tenant
+    national_ID co_living.personalID,                           -- personalID of the tenant
 
     PRIMARY KEY (tenant_id)
 );
 
 -- Name: guest; Type: TABLE; Schema: co-living; Owner: postgres
 CREATE TABLE co_living.guest (
-    guest_id co_living.ID NOT NULL,                             -- id of the guest
-    tenant_id co_living."serialID" NOT NULL,                    -- id of the tenant
+    guest_id co_living.personalID NOT NULL,                             -- personalID of the guest
+    tenant_id co_living.ID NOT NULL,                    -- id of the tenant
     guest_name character varying(50) NOT NULL,
     guest_surname character varying(50) NOT NULL,
     email co_living.email,                              
@@ -202,7 +202,7 @@ CREATE TABLE co_living.co_living (
     emergency_contacts co_living.phone_number[],                -- emergency contacts 
     amenities co_living.amenities[],                            -- amenities 
     facilities co_living.facilities[],                          -- facilities (list)
-    manager_id co_living.ID NOT NULL,                           -- id of the manager
+    manager_id co_living.personalID NOT NULL,                           -- personalID of the manager
 
     PRIMARY KEY (co_living_address),
     FOREIGN KEY (manager_id) REFERENCES co_living.manager(manager_id)
@@ -236,7 +236,7 @@ CREATE TABLE co_living.event (
 -- Name: participation as guest ; Type: TABLE; Schema: co-living; Owner: postgres
 CREATE TABLE co_living.guest_participation (
     event_name character varying(256) NOT NULL,                 -- name of the event 
-    guest_id co_living.ID NOT NULL,                             -- id of the guest
+    guest_id co_living.personalID NOT NULL,                             -- personalID of the guest
     arrival_time time with time zone,                             -- time of arrival of the guest
 
     PRIMARY KEY (event_name, guest_id),
@@ -247,7 +247,7 @@ CREATE TABLE co_living.guest_participation (
 -- Name: participation ; Type: TABLE; Schema: co-living; Owner: postgres
 CREATE TABLE co_living.participation (
     event_name character varying(256) NOT NULL,                 -- name of the event 
-    tenant_id co_living."serialID" NOT NULL,                    -- id of the tenant
+    tenant_id co_living.ID NOT NULL,                    -- id of the tenant
     arrival_time time with time zone,                             -- time of arrival of the tenant
 
     PRIMARY KEY (event_name, tenant_id),
@@ -291,7 +291,7 @@ CREATE TABLE co_living.partnership (
 -- Name: organize; Type: TABLE; Schema: co-living; Owner: postgres
 CREATE TABLE co_living.organize (
     event_name character varying(256) NOT NULL,                 -- name of the event (external id)
-    manager_id co_living.ID NOT NULL,                           -- id of the manager (external id)
+    manager_id co_living.personalID NOT NULL,                   -- personalID of the manager (external id)
     event_time time with time zone,                             -- time of the event (time with time zone)
 
     PRIMARY KEY (event_name, manager_id),
@@ -326,7 +326,7 @@ CREATE TABLE co_living.room (
 CREATE TABLE co_living.standard_queue (
     co_living_address co_living.address NOT NULL,               -- address of the co-living (external id)
     room_number integer NOT NULL,                               -- number of the room
-    applicant_id  co_living.ID NOT NULL,                        -- id of the tenant
+    applicant_id  co_living.personalID NOT NULL,                -- personalID of the tenant
     entry_time timestamp with time zone NOT NULL,               -- time of the entry in the queue
 
     PRIMARY KEY (co_living_address, room_number, applicant_id),
@@ -338,7 +338,7 @@ CREATE TABLE co_living.standard_queue (
 CREATE TABLE co_living.priority_queue (
     co_living_address co_living.address NOT NULL,               -- address of the co-living (external id)
     room_number integer NOT NULL,                               -- number of the room
-    applicant_id  co_living.ID NOT NULL,                        -- id of the tenant
+    applicant_id  co_living.personalID NOT NULL,                -- personalID of the tenant
     entry_time timestamp with time zone NOT NULL,               -- time of the entry in the queue
 
     PRIMARY KEY (co_living_address, room_number, applicant_id),
@@ -349,7 +349,7 @@ CREATE TABLE co_living.priority_queue (
 
 -- Name: form; Type: TABLE; Schema: co-living; Owner: postgres
 CREATE TABLE co_living.form (
-    applicant_id  co_living.ID NOT NULL,                        -- id of the applicant
+    applicant_id  co_living.personalID NOT NULL,                -- personalID of the applicant
     room_number integer,                                        -- number of the room
     form_number integer NOT NULL,                               -- number of the form
 
@@ -361,7 +361,7 @@ CREATE TABLE co_living.form (
 -- Name: mandate; Type: TABLE; Schema: co-living; Owner: postgres
 CREATE TABLE co_living.mandate (
     co_living_address co_living.address NOT NULL,               -- address of the co-living (external id)
-    tenant_id co_living."serialID" NOT NULL,                    -- id of the tenant
+    tenant_id co_living.ID NOT NULL,                    -- id of the tenant
     start_date date NOT NULL,                                   -- start date of the mandate
     end_date date NOT NULL,                                     -- end date of the mandate
 
@@ -373,7 +373,7 @@ CREATE TABLE co_living.mandate (
 -- Name: rate; Type: TABLE; Schema: co-living; Owner: postgres
 CREATE TABLE co_living.rate (
     co_living_address co_living.address NOT NULL,               -- address of the co-living (external id)
-    tenant_id co_living."serialID" NOT NULL,                    -- id of the tenant
+    tenant_id co_living.ID NOT NULL,                    -- id of the tenant
     grade integer NOT NULL,                                     -- rate of the co-living
     review character varying(100),                              -- comment of the rate
 
@@ -387,7 +387,7 @@ CREATE TABLE co_living.rate (
 CREATE TABLE co_living.complaint (
     ticket_number integer NOT NULL,                             -- number of the ticket
     comments character varying(100),                            -- comments of the complaint
-    manager_id co_living.ID NOT NULL,                           -- id of the manager
+    manager_id co_living.personalID NOT NULL,                   -- personalID of the manager
 
     PRIMARY KEY (ticket_number),
     FOREIGN KEY (manager_id) REFERENCES co_living.manager(manager_id)
@@ -395,7 +395,7 @@ CREATE TABLE co_living.complaint (
 
 -- Name: write; Type: TABLE; Schema: co-living; Owner: postgres
 CREATE TABLE co_living.write (
-    tenant_id co_living."serialID" NOT NULL,                    -- id of the tenant
+    tenant_id co_living.ID NOT NULL,                    -- id of the tenant
     ticket_number integer NOT NULL,                             -- number of the ticket
 
     PRIMARY KEY (tenant_id, ticket_number),
@@ -406,15 +406,15 @@ CREATE TABLE co_living.write (
 -- Name: contract; Type: TABLE; Schema: co-living; Owner: postgres
 CREATE TABLE co_living.contract (
     contract_number integer NOT NULL,                           -- number of the contract
-    applicant_id  co_living.ID NOT NULL,                        -- id of the applicant
+    applicant_id  co_living.personalID NOT NULL,                -- personalID of the applicant
     co_living_address co_living.address NOT NULL,               -- address of the co-living (external id)
     room_number integer,                                        -- number of the room
-    tenant_id co_living."serialID" NOT NULL,                    -- id of the tenant
+    tenant_id co_living.ID NOT NULL,                    -- id of the tenant
     offer_type co_living.offer_type NOT NULL,                   -- type of the offer
     start_date date NOT NULL,                                   -- start date of the contract
     end_date date NOT NULL,                                     -- end date of the contract
     monthly_rent integer NOT NULL,                              -- monthly rent of the contract
-    manager_id co_living.ID NOT NULL,                           -- id of the manager
+    manager_id co_living.personalID NOT NULL,                   -- personalID of the manager
 
     PRIMARY KEY (contract_number),
     FOREIGN KEY (applicant_id) REFERENCES co_living.applicant(applicant_id),
