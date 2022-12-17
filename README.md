@@ -14,5 +14,9 @@ The image below shows the relational schema of the database.
 
   
 **Contributors**:
+
 This project is the result of a team work of the following people:
 
+<p align="center">
+    <img src="imgs/people.png" width="500" />
+</p>
