@@ -38,7 +38,7 @@ WHERE c.co ̇living ̇address = ’Via Gaetano Trezza,18,Verona,37129,Verona,Ita
 
 Output:
 <p align="center">
-    <img src="imgs/query1.png" width="300" />
+    <img src="imgs/query1.png" width="400" />
 </p>
 
 2. List the managers of the tenants who have rated a co-living higher than 8, alongside with the grade and the review;
@@ -51,7 +51,7 @@ Inner Join co ̇living.Contract AS C ON R.tenant ̇id=C.tenant ̇id) As L On M.m
 
 Output:
 <p align="center">
-    <img src="imgs/query2.png" width="300" />
+    <img src="imgs/query2.png" width="400" />
 </p>
 
 3. Select which tenant invited a guest in the ’Cooking class’ event.
@@ -68,7 +68,7 @@ ON T.tenant ̇id = S.tenant ̇id) AS Q;
 
 Output:
 <p align="center">
-    <img src="imgs/query3.png" width="200" />
+    <img src="imgs/query3.png" width="140" />
 </p>
 
 **Contributors**:
