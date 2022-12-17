@@ -37,7 +37,7 @@ WHERE c.co ̇living ̇address = ’Via Gaetano Trezza,18,Verona,37129,Verona,Ita
 ```
 
 Output:
-<p align="center">
+<p align="left">
     <img src="imgs/query1.png" width="400" />
 </p>
 
@@ -50,8 +50,8 @@ Inner Join co ̇living.Contract AS C ON R.tenant ̇id=C.tenant ̇id) As L On M.m
 ```
 
 Output:
-<p align="center">
-    <img src="imgs/query2.png" width="400" />
+<p align="left">
+    <img src="imgs/query2.png" width="450" />
 </p>
 
 3. Select which tenant invited a guest in the ’Cooking class’ event.
@@ -67,8 +67,8 @@ ON T.tenant ̇id = S.tenant ̇id) AS Q;
 ```
 
 Output:
-<p align="center">
-    <img src="imgs/query3.png" width="140" />
+<p align="left">
+    <img src="imgs/query3.png" width="100" />
 </p>
 
 **Contributors**:
