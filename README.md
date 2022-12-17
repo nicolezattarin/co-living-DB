@@ -22,7 +22,55 @@ The image below shows the relational schema of the database.
 
 A full documentation of the conceptual and logical design of the database can be found in the [docs](docs) folder.
 
-  
+
+## Physical Implementation and main queries
+The sql implementation of the database can be found in the [src](src) folder, together with a simple example of how to populate the database with some data.
+
+Some examples of queries are the following:
+
+1. Retrieve a list of the tenants staying in the co-living in ’Via Gaetano Trezza,18,Verona,37129,Verona,Italy’, together with their name, surname, national ID
+```sql
+SELECT t.tenant ̇name , t.surname , t.national ̇id
+FROM co ̇living.tenant as t
+INNER JOIN co ̇living.contract as c ON t.tenant ̇id = c.tenant ̇ID
+WHERE c.co ̇living ̇address = ’Via Gaetano Trezza,18,Verona,37129,Verona,Italy’;
+```
+
+Output:
+<p align="center">
+    <img src="imgs/query1.png" width="400" />
+</p>
+
+2. List the managers of the tenants who have rated a co-living higher than 8, alongside with the grade and the review;
+```sql
+Select manager ̇name , manager ̇surname , grade , review From co ̇living.Manager AS M
+Inner Join (
+(Select * From co ̇living.rate Where grade¿8) AS R
+Inner Join co ̇living.Contract AS C ON R.tenant ̇id=C.tenant ̇id) As L On M.manager ̇id=L.manager ̇id;
+```
+
+Output:
+<p align="center">
+    <img src="imgs/query2.png" width="400" />
+</p>
+
+3. Select which tenant invited a guest in the ’Cooking class’ event.
+```sql
+SELECT Q.tenant ̇name
+FROM
+(SELECT * FROM co ̇living.tenant AS T
+INNER JOIN (Select * FROM co ̇living.guest AS G
+INNER JOIN (select * from co ̇living.guest ̇participation where event ̇name = ’Cooking
+class’ ) AS P
+ON G.guest ̇id = P.guest ̇id) AS S
+ON T.tenant ̇id = S.tenant ̇id) AS Q;
+```
+
+Output:
+<p align="center">
+    <img src="imgs/query3.png" width="400" />
+</p>
+
 **Contributors**:
 
 This project is the result of a team work of the following people:
