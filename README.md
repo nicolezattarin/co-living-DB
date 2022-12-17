@@ -1,4 +1,7 @@
 # co-living-DB
+This repository contains the implementation of a database for a co-living business. The database is implemented in PostgreSQL and it is used to store all the information needed to manage a co-living business.
+
+The development of this database is part of the course of Foundations of Databases at the University of Padova, contributors are listed at the end of this document.
 
 ## Overview
 A co-living is a residential community living model that accommodates people living in the same dwelling unit, facilitated by a professional host. Co-living contributes to a lifestyle concentrated around an international community that provides shared housing for people with similar values or intentions.
